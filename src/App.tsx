@@ -7,21 +7,26 @@ import Pagination from "./components/pagination";
 function App() {
   const [stories, setStories] = useState([]);
   const location = useLocation();
+  const path = location.pathname.split("/").find((p) => p.length > 0) || "news";
 
-  console.log({location});
-  
+  const queryParams = new URLSearchParams(location.search);
+  const page = queryParams.get("page") || "1";  
+
+  console.log({ location, queryParams });
+
   useEffect(() => {
-    async function getData(type: string) {
-      const data = await fetchAPI(type);
+    async function getData(type: string, page: string) {
+      const data = await fetchAPI(type, page);
       setStories(data);
     }
-    getData(location.pathname.split('/').find(p => p.length > 0) || 'news');
-  }, [location]);
+    getData(path, page);
+  }, [path, page]);
+
 
   return (
     <>
       <Nav />
-      <Pagination page={1} stories={stories} type={"new"} />
+      <Pagination page={parseInt(page)} stories={stories} type={path} />
     </>
   );
 }
